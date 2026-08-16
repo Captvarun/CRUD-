@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Record Archive — Student Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2a24;
+    --ink-deep:#132019;
+    --card:#f3ead9;
+    --card-shadow:#00000055;
+    --card-line:#cbb994;
+    --stamp:#a3402b;
+    --stamp-dark:#7e2f1f;
+    --text-dark:#241a12;
+    --text-fade:#5c4f3d;
+    --text-light:#e8e1d0;
+    --brass:#b89a5e;
+    --ok:#3d6b4f;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background:
+      radial-gradient(ellipse at 20% 0%, #24382f 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 100%, #20342b 0%, transparent 55%),
+      var(--ink);
+    color:var(--text-light);
+    font-family:'IBM Plex Mono', monospace;
+    min-height:100vh;
+    padding:40px 20px 80px;
+  }
+
+  /* ---------- header: catalog drawer label ---------- */
+  .archive-header{
+    max-width:960px;
+    margin:0 auto 36px;
+    text-align:center;
+  }
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:clamp(32px, 5vw, 52px);
+    letter-spacing:-0.01em;
+    color:var(--text-light);
+  }
+  .sub{
+    margin-top:10px;
+    font-size:13px;
+    color:#a9bcb1;
+    font-style:italic;
+    font-family:'Fraunces', serif;
+  }
+  .drawer-rule{
+    width:100%;
+    max-width:960px;
+    margin:26px auto 0;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--brass) 20%, var(--brass) 80%, transparent);
+    opacity:0.5;
+  }
+
+  /* ---------- intake form: "fill the card" ---------- */
+  .intake{
+    max-width:960px;
+    margin:36px auto;
+    background:var(--card);
+    color:var(--text-dark);
+    border-radius:3px;
+    padding:26px 28px 22px;
+    position:relative;
+    box-shadow:0 18px 40px -12px var(--card-shadow), 0 2px 0 var(--card-line) inset;
+  }
+  .intake::before{
+    content:"";
+    position:absolute;
+    top:0; left:26px; right:26px;
+    height:1px;
+    background:repeating-linear-gradient(90deg, var(--card-line) 0 8px, transparent 8px 14px);
+  }
+  .intake-label{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--stamp-dark);
+    margin-bottom:16px;
+  }
+  .intake-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+    gap:14px 16px;
+  }
+  .field label{
+    display:block;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--text-fade);
+    margin-bottom:5px;
+  }
+  .field input, .field select{
+    width:100%;
+    background:transparent;
+    border:none;
+    border-bottom:1.5px solid var(--card-line);
+    padding:6px 2px 8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14.5px;
+    color:var(--text-dark);
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  .field input:focus, .field select:focus{
+    border-bottom-color:var(--stamp);
+  }
+  .field input::placeholder{ color:#9c8f79; }
+
+  .intake-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:20px;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .hint{ font-size:11.5px; color:var(--text-fade); }
+
+  .stamp-btn{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.04em;
+    background:var(--stamp);
+    color:var(--text-light);
+    border:none;
+    padding:11px 22px;
+    border-radius:2px;
+    cursor:pointer;
+    transform:rotate(-1deg);
+    box-shadow:0 6px 14px -6px #00000066;
+    transition:transform .12s ease, box-shadow .12s ease, background .15s ease;
+  }
+  .stamp-btn:hover{ transform:rotate(0deg) scale(1.03); box-shadow:0 8px 18px -6px #00000077; }
+  .stamp-btn:active{ transform:rotate(0deg) scale(0.97); }
+  .stamp-btn.cancel{
+    background:transparent;
+    color:var(--text-fade);
+    border:1.5px solid var(--card-line);
+    transform:none;
+    box-shadow:none;
+  }
+  .stamp-btn.cancel:hover{ color:var(--text-dark); border-color:var(--text-fade); }
+
+  /* ---------- toolbar ---------- */
+  .toolbar{
+    max-width:960px;
+    margin:0 auto 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .toolbar input[type="search"]{
+    background:#233830;
+    border:1px solid #35493f;
+    color:var(--text-light);
+    padding:9px 14px;
+    border-radius:2px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    min-width:220px;
+    outline:none;
+  }
+  .toolbar input[type="search"]::placeholder{ color:#7f9488; }
+  .toolbar input[type="search"]:focus{ border-color:var(--brass); }
+  .tally{ font-size:12px; color:#a9bcb1; letter-spacing:0.04em; }
+  .tally b{ color:var(--brass); }
+
+  /* ---------- record cards ---------- */
+  .catalog{
+    max-width:960px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:20px;
+  }
+
+  .rcard{
+    background:var(--card);
+    color:var(--text-dark);
+    border-radius:2px;
+    padding:20px 20px 16px;
+    position:relative;
+    box-shadow:0 10px 24px -10px var(--card-shadow);
+    animation:settle .28s ease both;
+  }
+  @keyframes settle{
+    from{ opacity:0; transform:translateY(8px) scale(0.98); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  .rcard::before{
+    content:"";
+    position:absolute;
+    top:0; left:20px; right:20px; height:1px;
+    background:repeating-linear-gradient(90deg, var(--card-line) 0 6px, transparent 6px 11px);
+  }
+  .rcard-id{
+    position:absolute;
+    top:14px; right:16px;
+    font-family:'Fraunces', serif;
+    font-size:11px;
+    color:var(--brass);
+    letter-spacing:0.06em;
+  }
+  .rcard-name{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:20px;
+    margin:12px 0 2px;
+    padding-right:50px;
+  }
+  .rcard-roll{
+    font-size:11.5px;
+    color:var(--stamp-dark);
+    letter-spacing:0.08em;
+    margin-bottom:14px;
+  }
+  .rcard-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    padding:6px 0;
+    border-top:1px dashed var(--card-line);
+    color:var(--text-fade);
+  }
+  .rcard-row span:last-child{ color:var(--text-dark); text-align:right; }
+
+  .rcard-actions{
+    display:flex;
+    gap:10px;
+    margin-top:16px;
+    padding-top:12px;
+    border-top:1px solid var(--card-line);
+  }
+  .rcard-actions button{
+    flex:1;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:8px 6px;
+    border-radius:2px;
+    cursor:pointer;
+    border:1px solid var(--card-line);
+    background:transparent;
+    color:var(--text-fade);
+    transition:all .12s ease;
+  }
+  .rcard-actions button.edit:hover{ border-color:var(--ok); color:var(--ok); }
+  .rcard-actions button.del:hover{ border-color:var(--stamp); color:var(--stamp); }
+
+  .empty-slot{
+    max-width:960px;
+    margin:60px auto;
+    text-align:center;
+    color:#7f9488;
+  }
+  .empty-slot .glyph{
+    font-family:'Fraunces', serif;
+    font-size:38px;
+    color:var(--brass);
+    margin-bottom:10px;
+  }
+  .empty-slot p{ font-size:13px; max-width:340px; margin:0 auto; line-height:1.6; }
+
+  @media (prefers-reduced-motion: reduce){
+    .rcard{ animation:none; }
+    .stamp-btn{ transition:none; }
+  }
+
+  @media (max-width:520px){
+    .intake{ padding:20px 16px; }
+    .toolbar{ flex-direction:column; align-items:stretch; }
+    .toolbar input[type="search"]{ width:100%; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="archive-header">
+    <div class="eyebrow">C · R · U · D — Record Archive</div>
+    <h1>Student Register</h1>
+    <div class="sub">Create, read, update &amp; delete — one card per student, kept in this browser's drawer.</div>
+  </div>
+  <div class="drawer-rule"></div>
+
+  <form class="intake" id="intakeForm">
+    <div class="intake-label" id="formLabel">— New Entry —</div>
+    <input type="hidden" id="editId" value="">
+    <div class="intake-grid">
+      <div class="field">
+        <label for="fName">Full name</label>
+        <input type="text" id="fName" placeholder="e.g. Meera S. Venkat" required>
+      </div>
+      <div class="field">
+        <label for="fRoll">Roll number</label>
+        <input type="text" id="fRoll" placeholder="e.g. 21CS045" required>
+      </div>
+      <div class="field">
+        <label for="fCourse">Branch / course</label>
+        <input type="text" id="fCourse" placeholder="e.g. CSE" required>
+      </div>
+      <div class="field">
+        <label for="fYear">Year</label>
+        <select id="fYear" required>
+          <option value="" disabled selected>Select</option>
+          <option>1st Year</option>
+          <option>2nd Year</option>
+          <option>3rd Year</option>
+          <option>4th Year</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fEmail">Email</label>
+        <input type="email" id="fEmail" placeholder="e.g. meera@rec.edu.in" required>
+      </div>
+    </div>
+    <div class="intake-footer">
+      <span class="hint" id="formHint">Fill the card, then stamp it in.</span>
+      <div style="display:flex; gap:10px;">
+        <button type="button" class="stamp-btn cancel" id="cancelBtn" style="display:none;">Discard</button>
+        <button type="submit" class="stamp-btn" id="submitBtn">Stamp In</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="toolbar">
+    <input type="search" id="searchBox" placeholder="Search name, roll no. or branch…">
+    <div class="tally"><b id="tallyCount">0</b> records on file</div>
+  </div>
+
+  <div class="catalog" id="catalog"></div>
+  <div class="empty-slot" id="emptySlot" style="display:none;">
+    <div class="glyph">◌</div>
+    <p>The drawer is empty. Fill in the card above to file your first student record.</p>
+  </div>
+
+<script>
+  const STORAGE_KEY = 'crud-student-records';
+
+  const form = document.getElementById('intakeForm');
+  const editIdField = document.getElementById('editId');
+  const catalog = document.getElementById('catalog');
+  const emptySlot = document.getElementById('emptySlot');
+  const searchBox = document.getElementById('searchBox');
+  const tallyCount = document.getElementById('tallyCount');
+  const formLabel = document.getElementById('formLabel');
+  const formHint = document.getElementById('formHint');
+  const submitBtn = document.getElementById('submitBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+
+  const fields = {
+    name: document.getElementById('fName'),
+    roll: document.getElementById('fRoll'),
+    course: document.getElementById('fCourse'),
+    year: document.getElementById('fYear'),
+    email: document.getElementById('fEmail'),
+  };
+
+  // ---------- storage helpers ----------
+  function loadRecords(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){
+      console.error('Could not read records:', e);
+      return [];
+    }
+  }
+  function saveRecords(records){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    }catch(e){
+      console.error('Could not save records:', e);
+      alert('Storage failed — your browser may be blocking local storage.');
+    }
+  }
+
+  let records = loadRecords();
+
+  // ---------- render ----------
+  function render(){
+    const query = searchBox.value.trim().toLowerCase();
+    const filtered = query
+      ? records.filter(r =>
+          r.name.toLowerCase().includes(query) ||
+          r.roll.toLowerCase().includes(query) ||
+          r.course.toLowerCase().includes(query))
+      : records;
+
+    tallyCount.textContent = records.length;
+    catalog.innerHTML = '';
+
+    if(filtered.length === 0){
+      emptySlot.style.display = 'block';
+      emptySlot.querySelector('p').textContent = records.length === 0
+        ? "The drawer is empty. Fill in the card above to file your first student record."
+        : "No cards match that search.";
+      return;
+    }
+    emptySlot.style.display = 'none';
+
+    filtered.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'rcard';
+      card.innerHTML = `
+        <div class="rcard-id">#${r.id.toString().padStart(3,'0')}</div>
+        <div class="rcard-name">${escapeHtml(r.name)}</div>
+        <div class="rcard-roll">${escapeHtml(r.roll)}</div>
+        <div class="rcard-row"><span>Branch</span><span>${escapeHtml(r.course)}</span></div>
+        <div class="rcard-row"><span>Year</span><span>${escapeHtml(r.year)}</span></div>
+        <div class="rcard-row"><span>Email</span><span>${escapeHtml(r.email)}</span></div>
+        <div class="rcard-actions">
+          <button class="edit" data-id="${r.id}">Edit</button>
+          <button class="del" data-id="${r.id}">Delete</button>
+        </div>
+      `;
+      catalog.appendChild(card);
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---------- create / update ----------
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = {
+      name: fields.name.value.trim(),
+      roll: fields.roll.value.trim(),
+      course: fields.course.value.trim(),
+      year: fields.year.value,
+      email: fields.email.value.trim(),
+    };
+    if(!data.name || !data.roll || !data.course || !data.year || !data.email) return;
+
+    const editId = editIdField.value;
+    if(editId){
+      records = records.map(r => r.id === Number(editId) ? { ...r, ...data } : r);
+    } else {
+      const nextId = records.length ? Math.max(...records.map(r => r.id)) + 1 : 1;
+      records.push({ id: nextId, ...data });
+    }
+    saveRecords(records);
+    exitEditMode();
+    render();
+  });
+
+  // ---------- edit / delete (event delegation) ----------
+  catalog.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('.edit');
+    const delBtn = e.target.closest('.del');
+
+    if(editBtn){
+      const id = Number(editBtn.dataset.id);
+      const r = records.find(x => x.id === id);
+      if(!r) return;
+      fields.name.value = r.name;
+      fields.roll.value = r.roll;
+      fields.course.value = r.course;
+      fields.year.value = r.year;
+      fields.email.value = r.email;
+      editIdField.value = id;
+      formLabel.textContent = `— Editing Card #${id.toString().padStart(3,'0')} —`;
+      formHint.textContent = 'Update the fields, then stamp your changes in.';
+      submitBtn.textContent = 'Stamp Update';
+      cancelBtn.style.display = 'inline-block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if(delBtn){
+      const id = Number(delBtn.dataset.id);
+      const r = records.find(x => x.id === id);
+      if(!r) return;
+      if(confirm(`Remove ${r.name}'s card from the archive? This can't be undone.`)){
+        records = records.filter(x => x.id !== id);
+        saveRecords(records);
+        if(editIdField.value === String(id)) exitEditMode();
+        render();
+      }
+    }
+  });
+
+  cancelBtn.addEventListener('click', exitEditMode);
+
+  function exitEditMode(){
+    form.reset();
+    editIdField.value = '';
+    formLabel.textContent = '— New Entry —';
+    formHint.textContent = 'Fill the card, then stamp it in.';
+    submitBtn.textContent = 'Stamp In';
+    cancelBtn.style.display = 'none';
+  }
+
+  searchBox.addEventListener('input', render);
+
+  render();
+</script>
+</body>
+</html>
